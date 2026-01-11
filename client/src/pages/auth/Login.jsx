@@ -27,6 +27,7 @@ const Login = () => {
     }
 
     if (isSuccess || user) {
+      console.log(user.role);
       // Role-based redirection logic
       if (user?.role === 'admin') {
         navigate('/admin');
