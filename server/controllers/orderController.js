@@ -2,6 +2,7 @@ const Order = require('../models/orderModel');
 const User = require('../models/userModel');
 const Food = require('../models/foodModel');
 const asyncHandler = require('express-async-handler');
+const sendEmail = require('../utils/sendEmail');
 // @desc    Create new order
 // @route   POST /api/orders
 const addOrderItems = async (req, res) => {
@@ -21,6 +22,27 @@ const addOrderItems = async (req, res) => {
     });
 
     const createdOrder = await order.save();
+    const emailHtml = `
+  <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+    <h2 style="color: #ff4f00;">Order Confirmed!</h2>
+    <p>Hi ${req.user.name}, your order <b>#${createdOrder._id.toString().slice(-6)}</b> has been placed successfully.</p>
+    <hr/>
+    <h3>Order Summary:</h3>
+    <ul>
+      ${createdOrder.orderItems.map(item => `<li>${item.qty}x ${item.name} - $${item.price}</li>`).join('')}
+    </ul>
+    <p><b>Total Amount: $${createdOrder.totalPrice}</b></p>
+    <p>Delivery to: ${createdOrder.shippingAddress.address}, ${createdOrder.shippingAddress.city}</p>
+    <hr/>
+    <p>Track your order here: <a href="${process.env.FRONTEND_URL}/track-order/${createdOrder._id}">Track My Food</a></p>
+  </div>
+`;
+sendEmail({
+  email: req.user.email,
+  subject: `Receipt for Order #${createdOrder._id.toString().slice(-6)}`,
+  html: emailHtml
+}).then(() => console.log("Email sent successfully", createdOrder._id.toString().slice(-6), req.user.email))
+.catch(err => console.error("Email failed:", err));
     res.status(201).json(createdOrder);
   }
 };

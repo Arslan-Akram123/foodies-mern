@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
+import { getMe } from './features/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { cartActions } from './features/cartSlice'; // Bundle import is enough
 import ScrollToTop from './components/common/ScrollToTop';
@@ -47,12 +48,13 @@ function App() {
   const { user } = useSelector((state) => state.auth);
 
   // Sync Cart from Database on startup/login
-  useEffect(() => {
+ useEffect(() => {
+    
     if (user) {
+      dispatch(getMe());
       dispatch(cartActions.fetchCart());
     }
-  }, [user, dispatch]);
-
+  }, [dispatch]);
   return (
     <Router>
       <ScrollToTop />

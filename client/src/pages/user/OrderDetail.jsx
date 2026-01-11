@@ -226,7 +226,7 @@ const OrderDetail = () => {
                       onMouseEnter={() => setHover(star)} onMouseLeave={() => setHover(0)} onClick={() => setRating(star)}
                       className="transition-transform active:scale-90 hover:scale-110"
                     >
-                      <Star size={42} className={`transition-all duration-300 Rs{(hover || rating) >= star ? 'text-brand-secondary fill-brand-secondary' : 'text-gray-100'}`} />
+                      <Star size={42} className={`transition-all duration-300 ${(hover || rating) >= star ? 'text-brand-secondary fill-brand-secondary' : 'text-gray-100'}`} />
                     </button>
                   ))}
                 </div>
